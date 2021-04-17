@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chiabot
+  labels:
+    app: chiabot
+spec:
+  selector:
+    matchLabels:
+      app: chiabot
+  template:
+    metadata:
+      labels:
+        app: chiabot
+    spec:
+      containers:
+      - image: starttoaster/chiabot:latest
+        imagePullPolicy: Always
+        name: chiabot
+        env:
+        - name: CHECK_INTERVAL
+          value: 
+        - name: TOKEN
+          value: 
+        - name: CHANNEL_ID
+          value: 

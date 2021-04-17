@@ -1,0 +1,23 @@
+stages:
+  - build
+  - package
+
+build:
+  stage: build
+  image: golang:alpine
+  script:
+    - go build -o GOBINARY
+  artifacts:
+    paths:
+      - GOBINARY
+
+package:
+  stage: package
+  image:
+    name: gcr.io/kaniko-project/executor:debug
+    entrypoint: [""]
+  script:
+    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
+    - /kaniko/executor --context $CI_PROJECT_DIR --dockerfile $CI_PROJECT_DIR/Dockerfile --destination $CI_REGISTRY_IMAGE:latest
+  only:
+    $CI_DEFAULT_BRANCH
