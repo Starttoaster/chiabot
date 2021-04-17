@@ -20,7 +20,7 @@ docker container run \
   -e CHECK_INTERVAL="60" \
   -e TOKEN="my_slack_app_token" \
   -e CHANNEL_ID="slack_channel_id" \
-  starttoaster/chiabot:latest
+  registry.gitlab.com/brandonbutler/chiabot:latest
 ```
 
 Example docker-compose.yml:
@@ -31,7 +31,7 @@ services:
 
  cloudflare:
    container_name: chiabot
-   image: starttoaster/chiabot:latest
+   image: registry.gitlab.com/brandonbutler/chiabot:latest
    environment:
      - CHECK_INTERVAL="60"
      - TOKEN="my_slack_app_token"

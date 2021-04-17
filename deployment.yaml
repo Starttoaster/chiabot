@@ -14,7 +14,7 @@ spec:
         app: chiabot
     spec:
       containers:
-      - image: starttoaster/chiabot:latest
+      - image: registry.gitlab.com/brandonbutler/chiabot:latest
         imagePullPolicy: Always
         name: chiabot
         env:
