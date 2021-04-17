@@ -19,6 +19,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/slack-go/slack"
@@ -29,7 +30,7 @@ import (
 var (
 	token     string
 	channelID string
-	interval  int
+	interval  string
 )
 
 var (
@@ -43,7 +44,7 @@ var rootCmd = &cobra.Command{
 
 	Run: func(cmd *cobra.Command, args []string) {
 		//Check interval duration setup
-		intervalWithSuffix := fmt.Sprintf("%ds", interval)
+		intervalWithSuffix := fmt.Sprintf("%ss", interval)
 		checkInterval, err := time.ParseDuration(intervalWithSuffix)
 		if err != nil {
 			log.Fatal(fmt.Sprintf("[ERROR] Could not parse duration. Interval: %s\n%v"), intervalWithSuffix, err)
@@ -102,9 +103,9 @@ func Execute() {
 }
 
 func init() {
-	rootCmd.PersistentFlags().StringVar(&token, "token", "", "Slack token for auth")
-	rootCmd.PersistentFlags().StringVar(&channelID, "channel-id", "", "Slack channel ID to post messages to")
-	rootCmd.PersistentFlags().IntVar(&interval, "interval", 60, "The time in seconds to check for a new release (defaults to 60)")
+	token = os.Getenv("TOKEN")
+	channelID = os.Getenv("CHANNEL_ID")
+	interval = os.Getenv("CHECK_INTERVAL")
 }
 
 func compileChangelogs(url string, ver string, cl release.Changelog) string {
