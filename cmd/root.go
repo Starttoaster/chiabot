@@ -56,6 +56,12 @@ var rootCmd = &cobra.Command{
 			Timeout: timeout,
 		}
 
+		//Get latest release for the first time
+		previousLatest, err = release.GetLatest(client)
+		if err != nil {
+			log.Fatal(err)
+		}
+
 		//Slack client setup
 		bot := slack.New(token)
 
@@ -64,6 +70,7 @@ var rootCmd = &cobra.Command{
 			latest, err := release.GetLatest(client)
 			if err != nil {
 				log.Println(err)
+				continue
 			}
 
 			//Handle condition -- latest release unchanged
