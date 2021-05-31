@@ -1,6 +1,7 @@
 stages:
   - build
   - package
+  - deploy
 
 build:
   stage: build
@@ -22,3 +23,17 @@ package:
   only:
     variables:
       - $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+
+deploy:
+  stage: deploy
+  image: alpine/helm:latest
+  script:
+  - | 
+      wget https://github.com/wrouesnel/p2cli/releases/download/r5/p2 && chmod +x p2
+      mv p2 /usr/local/bin/p2
+      if [ -f "$CI_PROJECT_DIR/chart/values.yaml.j2" ]; then
+        p2 -t ${CI_PROJECT_DIR}/chart/values.yaml.j2 -o chart/values.yaml
+      fi
+      helm upgrade --install --namespace "default" chiabot chart/
+  environment: 
+    name: default

@@ -1,0 +1,21 @@
+metadata:
+  fullname: chiabot
+  labels:
+    - key: app
+      value: chiabot
+
+replicaCount: 1
+
+image:
+  repository: "{{ CI_REGISTRY_IMAGE }}"
+  tag: "latest"
+  pullPolicy: Always
+  pullSecret: gitlab-registry
+
+environment:
+- name: CHECK_INTERVAL
+  value: "60"
+- name: TOKEN
+  value: "{{ TOKEN }}"
+- name: CHANNEL_ID
+  value: "{{ CHANNEL_ID }}"

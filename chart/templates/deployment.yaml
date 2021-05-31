@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.metadata.fullname }}
+  labels:
+  {{ range .Values.metadata.labels }}
+    {{ .key | nindent 4 }}: {{ .value }}
+  {{ end }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{ range .Values.metadata.labels }}
+        {{ .key | nindent 6 }}: {{ .value }}
+      {{ end }}
+  template:
+    metadata:
+      labels:
+        helm-revision: "{{ .Release.Revision }}"
+      {{ range .Values.metadata.labels }}
+        {{ .key | nindent 8 }}: {{ .value }}
+      {{ end }}
+    spec:
+      imagePullSecrets:
+        - name: {{ .Values.image.pullSecret }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+          {{ range .Values.environment }}
+            - name: {{ .name }}
+              value: {{ .value | quote }}
+          {{ end }}
