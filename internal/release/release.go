@@ -61,9 +61,13 @@ func GetChanges(client *http.Client, url string) (Changelog, error) {
 				if tt.String() == "EndTag" && t.String() == "</ul>" {
 					recordingChanges = ""
 				}
+				if t.String() == "</div>" {
+					recordingChanges = ""
+				}
 				if t.String() == "</li>" {
 					sameBullet = false
 				}
+
 			}
 		case html.TextToken:
 			data := strings.TrimSpace(t.Data)
