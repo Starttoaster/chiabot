@@ -119,30 +119,36 @@ func compileChangelogs(url string, ver string, cl release.Changelog) string {
 	log := fmt.Sprintf(":rocket::rocket::rocket: New Chia release v%s! :rocket::rocket::rocket: \n%s\n", ver, url)
 	log += "\n"
 	log += "```"
-	log += "Added\n"
-	for _, line := range cl.Added {
-		if line == "" {
-			continue
+	if len(cl.Added) > 0 {
+		log += "Added\n"
+		for _, line := range cl.Added {
+			if line == "" {
+				continue
+			}
+			log += fmt.Sprintf(" * %s\n", line)
 		}
-		log += fmt.Sprintf(" * %s\n", line)
 	}
 
-	log += "\n"
-	log += "Changed\n"
-	for _, line := range cl.Changed {
-		if line == "" {
-			continue
+	if len(cl.Changed) > 0 {
+		log += "\n"
+		log += "Changed\n"
+		for _, line := range cl.Changed {
+			if line == "" {
+				continue
+			}
+			log += fmt.Sprintf(" * %s\n", line)
 		}
-		log += fmt.Sprintf(" * %s\n", line)
 	}
 
-	log += "\n"
-	log += "Fixed\n"
-	for _, line := range cl.Fixed {
-		if line == "" {
-			continue
+	if len(cl.Fixed) > 0 {
+		log += "\n"
+		log += "Fixed\n"
+		for _, line := range cl.Fixed {
+			if line == "" {
+				continue
+			}
+			log += fmt.Sprintf(" * %s\n", line)
 		}
-		log += fmt.Sprintf(" * %s\n", line)
 	}
 	log += "```"
 
