@@ -1,3 +1,11 @@
+include:
+    - project: 'brandonbutler/templates'
+      file: 
+        - '/templates/golang.yml'
+        - '/templates/kaniko.yml'
+        - '/templates/helm.yml'
+    - template: 'Workflows/Branch-Pipelines.gitlab-ci.yml'
+
 stages:
   - build
   - package
@@ -5,50 +13,18 @@ stages:
 
 build:
   stage: build
-  image: golang:alpine
-  script:
-    - go build -o GOBINARY
-  artifacts:
-    paths:
-      - GOBINARY
+  extends: .go-build
 
-package-dev:
+kaniko-build:
+  extends: .kaniko-build
   stage: package
-  image:
-    name: gcr.io/kaniko-project/executor:debug
-    entrypoint: [""]
-  script:
-    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
-    - /kaniko/executor --context $CI_PROJECT_DIR --dockerfile $CI_PROJECT_DIR/Dockerfile --destination $CI_REGISTRY_IMAGE:dev
-  only:
-    variables:
-      - $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH
-
-package-prd:
-  stage: package
-  image:
-    name: gcr.io/kaniko-project/executor:debug
-    entrypoint: [""]
-  script:
-    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
-    - /kaniko/executor --context $CI_PROJECT_DIR --dockerfile $CI_PROJECT_DIR/Dockerfile --destination $CI_REGISTRY_IMAGE:latest
-  only:
-    variables:
-      - $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
 
 deploy:
   stage: deploy
-  image: alpine/helm:latest
-  script:
-  - | 
-      wget https://github.com/wrouesnel/p2cli/releases/download/r5/p2 && chmod +x p2
-      mv p2 /usr/local/bin/p2
-      if [ -f "$CI_PROJECT_DIR/chart/values.yaml.j2" ]; then
-        p2 -t ${CI_PROJECT_DIR}/chart/values.yaml.j2 -o chart/values.yaml
-      fi
-      helm upgrade --install --namespace "default" chiabot chart/
+  extends: .helm-deploy
   environment: 
     name: default
-  only:
-    variables:
-      - $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      when: on_success
+    - when: never
