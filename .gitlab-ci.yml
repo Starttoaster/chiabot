@@ -3,6 +3,10 @@ include:
       file: 
         - '/templates/golang.yml'
         - '/templates/kaniko.yml'
+      #  - '/templates/helm.yml'
+    - project: 'brandonbutler/templates'
+      ref: 'helm-package'
+      file: 
         - '/templates/helm.yml'
     - template: 'Workflows/Branch-Pipelines.gitlab-ci.yml'
 
@@ -17,6 +21,10 @@ build:
 
 kaniko-build:
   extends: .kaniko-build
+  stage: package
+
+helm-package:
+  extends: .helm-package
   stage: package
 
 deploy:
