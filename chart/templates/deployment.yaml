@@ -3,6 +3,7 @@ kind: Deployment
 metadata:
   name: {{ .Values.metadata.fullname }}
   labels:
+    test: testing
   {{ range .Values.metadata.labels }}
     {{ .key | nindent 4 }}: {{ .value }}
   {{ end }}
